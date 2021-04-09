@@ -88,7 +88,7 @@ class ERC20Faucet extends Component {
             <p>
                Don't judge the code :) as it is for demostration purposes only.
                You can check the source code &nbsp;
-               <a href='https://github.com/albertov19/moonlink-dashboard'>
+               <a href='https://github.com/albertov19/moonbase-mintableERC20'>
                   here
                </a>
             </p>
