@@ -1,1 +1,0 @@
-{"ast":null,"code":"import web3 from './web3.js';\n\nconst mintableERC20 = require('./abi/mintableERC20.json');\n\nconst ethers = require('ethers');\n\nconst tokenInstace = address => {\n  return new ethers.Contract(address, mintableERC20.abi, web3());\n};\n\nexport default tokenInstace;","map":null,"metadata":{},"sourceType":"module"}

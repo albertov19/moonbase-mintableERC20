@@ -51,7 +51,7 @@ class ERC20Faucet extends Component {
       return (
          <Container>
             <Head>
-               <title>Moonlink Dashboard</title>
+               <title>Moonbase ERC20Mint</title>
                <link
                   rel='icon'
                   type='image/png'
