@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import tokenInstance from '../ethereum/feed';
+import { Button } from 'semantic-ui-react';
+
 const addresses = require('../ethereum/addresses');
 
 class Table extends Component {
@@ -11,6 +13,7 @@ class Table extends Component {
    // Set Initial State
    state = {
       errorMessage: '',
+      timeMint: 0,
       mercBalState: 0,
       venBalState: 0,
       erthBalState: 0,
@@ -108,11 +111,13 @@ class Table extends Component {
             <p>
                Information displayed in the following table corresponds to
                on-chain balance of each of the following ERC20 tokens on the Moonbase Alpha TestNet!
+               Users can mint 100 tokens every hour in each ERC20 token contract.
             </p>
             <table className='ui celled table'>
                <thead>
                   <tr>
-                     <th>ERC20 Token</th>
+                     <th>ERC20 Token Name</th>
+                     <th>Address</th>
                      <th>Balance</th>
                      <th>Can Mint?</th>
                   </tr>
@@ -120,6 +125,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Mercury</td>
+                     <td data-label='ERC20 Token'>{addresses.mercury}</td>
                      <td data-label='Balance'>{this.state.mercBalState}</td>
                      <td data-label='Can Mint?'>{this.state.mercMintState}</td>
                   </tr>
@@ -127,6 +133,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Venus</td>
+                     <td data-label='ERC20 Token'>{addresses.venus}</td>
                      <td data-label='Balance'>{this.state.venBalState}</td>
                      <td data-label='Can Mint?'>{this.state.venMintState}</td>
                   </tr>
@@ -134,6 +141,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Earth</td>
+                     <td data-label='ERC20 Token'>{addresses.earth}</td>
                      <td data-label='Balance'>{this.state.erthBalState}</td>
                      <td data-label='Can Mint?'>{this.state.erthMintState}</td>
                   </tr>
@@ -141,6 +149,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Mars</td>
+                     <td data-label='ERC20 Token'>{addresses.mars}</td>
                      <td data-label='Balance'>{this.state.marsBalState}</td>
                      <td data-label='Can Mint?'>{this.state.marsMintState}</td>
                   </tr>
@@ -148,6 +157,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Jupiter</td>
+                     <td data-label='ERC20 Token'>{addresses.jupiter}</td>
                      <td data-label='Balance'>{this.state.jupBalState}</td>
                      <td data-label='Can Mint?'>{this.state.jupMintState}</td>
                   </tr>
@@ -155,6 +165,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Saturn</td>
+                     <td data-label='ERC20 Token'>{addresses.saturn}</td>
                      <td data-label='Balance'>{this.state.satBalState}</td>
                      <td data-label='Next Mint'>{this.state.satMintState}</td>
                   </tr>
@@ -162,6 +173,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Uranus</td>
+                     <td data-label='ERC20 Token'>{addresses.uranus}</td>
                      <td data-label='Balance'>{this.state.unsBalState}</td>
                      <td data-label='Next Mint'>{this.state.unsMintState}</td>
                   </tr>
@@ -169,6 +181,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Neptune</td>
+                     <td data-label='ERC20 Token'>{addresses.neptune}</td>
                      <td data-label='Balance'>{this.state.neptBalState}</td>
                      <td data-label='Next Mint'>{this.state.neptMintState}</td>
                   </tr>
@@ -176,6 +189,7 @@ class Table extends Component {
                <tbody>
                   <tr>
                      <td data-label='ERC20 Token'>Pluto</td>
+                     <td data-label='ERC20 Token'>{addresses.pluto}</td>
                      <td data-label='Balance'>{this.state.plutBalState}</td>
                      <td data-label='Next Mint'>{this.state.plutMintState}</td>
                   </tr>
