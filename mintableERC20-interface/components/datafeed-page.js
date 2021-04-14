@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import tokenInstance from '../ethereum/feed';
-import { Button } from 'semantic-ui-react';
 
 const addresses = require('../ethereum/addresses');
 
@@ -110,8 +109,9 @@ class Table extends Component {
             <h3>Token Balance Information</h3>
             <p>
                Information displayed in the following table corresponds to
-               on-chain balance of each of the following ERC20 tokens on the Moonbase Alpha TestNet!
-               Users can mint 100 tokens every hour in each ERC20 token contract.
+               on-chain balance of each of the following ERC20 tokens on the Moonbase Alpha TestNet! <br />
+               Users can mint 100 tokens every hour in each ERC20 token contract. <br />
+               There are 8 tokens that represent each planet of the solar system. The 9th token is for pluto, which is not <a href="https://www.loc.gov/everyday-mysteries/astronomy/item/why-is-pluto-no-longer-a-planet/">considered a planet anymore.</a>
             </p>
             <table className='ui celled table'>
                <thead>
