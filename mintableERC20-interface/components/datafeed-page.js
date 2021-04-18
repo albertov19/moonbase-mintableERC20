@@ -113,9 +113,10 @@ class Table extends Component {
                Users can mint 100 tokens every hour in each ERC20 token contract. <br />
                There are 8 tokens that represent each planet of the solar system. The 9th token is for Pluto, which is not <a href="https://www.loc.gov/everyday-mysteries/astronomy/item/why-is-pluto-no-longer-a-planet/">considered a planet anymore.</a>
             </p>
-            <table className='ui celled table'>
+            <table className='ui celled table' style={{textAlign: 'center'}}>
                <thead>
                   <tr>
+                     <th>Logo</th>
                      <th>ERC20 Token Name</th>
                      <th>Symbol</th>
                      <th>Address</th>
@@ -125,6 +126,9 @@ class Table extends Component {
                </thead>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/mercury.svg" alt="MercuryLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Mercury</td>
                      <td data-label='Symbol'>MERC</td>
                      <td data-label='ERC20 Token'>{addresses.mercury}</td>
@@ -134,6 +138,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/venus.svg" alt="VenusLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Venus</td>
                      <td data-label='Symbol'>VEN</td>
                      <td data-label='ERC20 Token'>{addresses.venus}</td>
@@ -143,6 +150,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/earth.svg" alt="EarthLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Earth</td>
                      <td data-label='Symbol'>ERTH</td>
                      <td data-label='ERC20 Token'>{addresses.earth}</td>
@@ -152,6 +162,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/mars.svg" alt="MarsLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Mars</td>
                      <td data-label='Symbol'>MARS</td>
                      <td data-label='ERC20 Token'>{addresses.mars}</td>
@@ -161,6 +174,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/jupiter.svg" alt="JupiterLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Jupiter</td>
                      <td data-label='Symbol'>JUP</td>
                      <td data-label='ERC20 Token'>{addresses.jupiter}</td>
@@ -170,6 +186,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/saturn.svg" alt="SaturnLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Saturn</td>
                      <td data-label='Symbol'>SAT</td>
                      <td data-label='ERC20 Token'>{addresses.saturn}</td>
@@ -179,6 +198,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/uranus.svg" alt="UranusLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Uranus</td>
                      <td data-label='Symbol'>UNS</td>
                      <td data-label='ERC20 Token'>{addresses.uranus}</td>
@@ -188,6 +210,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/neptune.svg" alt="NeptuneLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Neptune</td>
                      <td data-label='Symbol'>NEPT</td>
                      <td data-label='ERC20 Token'>{addresses.neptune}</td>
@@ -197,6 +222,9 @@ class Table extends Component {
                </tbody>
                <tbody>
                   <tr>
+                     <td>
+                        <img src="/logos/pluto.svg" alt="PlutoLogo" style={{width: 32, height: 32}}/>
+                     </td>
                      <td data-label='ERC20 Token'>Pluto</td>
                      <td data-label='Symbol'>PLUT</td>
                      <td data-label='ERC20 Token'>{addresses.pluto}</td>
