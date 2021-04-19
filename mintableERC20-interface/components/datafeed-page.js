@@ -95,7 +95,7 @@ class Table extends Component {
          const dec = await contractInstance.decimals();
          const mint = await contractInstance.canMint(ethereum.selectedAddress);
          const balance = await contractInstance.balanceOf(ethereum.selectedAddress);
-         return [(balance.toString()/ Math.pow(10,dec)).toFixed(2), mint.toString(), symbol];
+         return [(balance.toString()/ Math.pow(10,dec)).toFixed(2), mint.toString()];
       } catch (error) {
          // Could not fetch price return error
          console.log(error);
