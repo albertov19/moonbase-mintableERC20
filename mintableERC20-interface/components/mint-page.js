@@ -48,8 +48,8 @@ const tokenNames = [
    {
       key: 'Pluto',
       text: 'Pluto',
-      token: 'pluto',
-   }
+      value: 'pluto',
+   }  
 ];
 class Table extends Component {
    // Nextjs uses this function to render this first server-side
@@ -86,7 +86,10 @@ class Table extends Component {
       return;
    };
 
-   handleChange = (e, { value }) => this.setState({ value })
+   handleChange = (e, { value }) => 
+   this.setState({ value },
+      console.log(value)
+      )
 
    render() {
       return (
