@@ -1,101 +1,109 @@
-import React, { Component } from 'react';
-import { Container, Button, Menu, Message } from 'semantic-ui-react';
+import React, { useEffect, useState } from 'react';
+import { Container, Button, Menu, Icon } from 'semantic-ui-react';
+import detectEthereumProvider from '@metamask/detect-provider';
+import * as ethers from 'ethers';
 import Head from 'next/head';
 import DataFeed from '../components/datafeed-page';
 import Mint from '../components/mint-page';
 import { Link } from '../routes';
-class ERC20Faucet extends Component {
-   // Nextjs uses this function to render this first server-side
-   static async getInitialProps() {
-      return {};
-   }
 
-   // Initial State
-   state = {
-      account: 'Not Connected',
-      errorMessage: '',
-   };
+const App = () => {
+  const [account, setAccount] = useState();
+  const [connected, setConnected] = useState(false);
 
-   async componentDidMount() {
-      // If already connected display account
-      if (
-         typeof ethereum !== 'undefined' &&
-         ethereum.selectedAddress !== null
-      ) {
-         this.setState({ account: ethereum.selectedAddress });
-      }
-   }
+  useEffect(async () => {
+    await checkMetamask;
 
-   onConnect = async () => {
-      if (typeof ethereum === 'undefined') {
-         // MetaMask not detected
-         this.setState({ account: 'MetaMask not Detected' });
+    // Check for changes in Metamask (account and chain)
+    if (window.ethereum) {
+      window.ethereum.on('chainChanged', () => {
+        window.location.reload();
+      });
+      window.ethereum.on('accountsChanged', () => {
+        window.location.reload();
+      });
+    }
+  }, []);
+
+  const checkMetamask = async () => {
+    const provider = await detectEthereumProvider({ mustBeMetaMask: true });
+
+    if (provider) {
+      const chainId = await provider.request({
+        method: 'eth_chainId',
+      });
+      // Moonbase Alpha's chainId is 1287, which is 0x507 in hex
+      if (chainId === '0x507') {
+        const accounts = await ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+
+        console.log(`O -> ${accounts}`);
+
+        // Update State
+        if (accounts) {
+          console.log(`I -> ${accounts}`);
+          setAccount(ethers.utils.getAddress(accounts[0]));
+          setConnected(true);
+        }
       } else {
-         // MetaMask detected - check network
-         if (ethereum.chainId !== '0x507') {
-            this.setState({ account: 'Only Moonbase Alpha Supported' });
-         } else {
-            const accounts = await ethereum.request({
-               method: 'eth_requestAccounts',
-            });
-
-            // Set account to state
-            if (accounts) {
-               this.setState({ account: accounts[0] });
-            }
-         }
+        // Only Moonbase Alpha is Supported
+        setAccount('Only Moonbase Alpha Supported');
       }
-   };
+    } else {
+      // MetaMask not detected
+      setAccount('MetaMask not Detected');
+    }
+  };
 
-   render() {
-      return (
-         <Container>
-            <Head>
-               <title>Moonbase ERC20Mint</title>
-               <link
-                  rel='icon'
-                  type='image/png'
-                  sizes='32x32'
-                  href='/favicon.png'
-               />
-               <link
-                  rel='stylesheet'
-                  href='//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css'
-               />
-            </Head>
-            <Menu style={{ marginTop: '10px' }}>
-               <Link route='/'>
-                  <a className='item'>Moonbase Alpha ERC20 Faucet</a>
-               </Link>
-               <Menu.Menu position='right'>
-                  <a className='item'> {this.state.account} </a>
-                  <Button
-                     floated='right'
-                     content='Connect MetaMask'
-                     icon='plus square'
-                     primary
-                     onClick={this.onConnect}
-                  />
-               </Menu.Menu>
-            </Menu>
-            <br />
-            <DataFeed />
-            <br />
-            <hr />
-            <br />
-            <Mint account={this.state.account} />
-            <br />
-            <p>
-               Don't judge the code :) as it is for demostration purposes only.
-               You can check the source code &nbsp;
-               <a href='https://github.com/albertov19/moonbase-mintableERC20'>
-                  here
-               </a>
-            </p>
-            <br />
-         </Container>
-      );
-   }
-}
+  const onConnect = async () => {
+    await checkMetamask();
+  };
 
-export default ERC20Faucet;
+  return (
+    <Container>
+      <Head>
+        <title>Moonbase ERC20Mint</title>
+        <link rel='icon' type='image/png' sizes='32x32' href='/favicon.png' />
+        <link
+          rel='stylesheet'
+          href='//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css'
+        />
+      </Head>
+      <Menu style={{ marginTop: '10px' }}>
+        <Link route='/'>
+          <a className='item'>Moonbase Alpha ERC20 Faucet</a>
+        </Link>
+        <Menu.Menu position='right'>
+          <a className='item'> {account} </a>
+          {connected ? (
+            <Button floated='right' icon labelPosition='left' color='green'>
+              <Icon name='check'></Icon>
+              Connected
+            </Button>
+          ) : (
+            <Button floated='right' icon labelPosition='left' onClick={onConnect} primary>
+              <Icon name='plus square'></Icon>
+              Connect MetaMask
+            </Button>
+          )}
+        </Menu.Menu>
+      </Menu>
+      <br />
+      <DataFeed />
+      <br />
+      <hr />
+      <br />
+      <Mint account={account} />
+      <br />
+      <p>
+        Don't judge the code :) as it is for demostration purposes only. You can check the source
+        code &nbsp;
+        <a href='https://github.com/albertov19/moonbase-mintableERC20'>here</a>
+      </p>
+      <br />
+    </Container>
+  );
+};
+
+export default App;
