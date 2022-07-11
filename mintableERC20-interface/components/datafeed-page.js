@@ -155,7 +155,7 @@ const dataFeed = () => {
                   )
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -181,7 +181,7 @@ const dataFeed = () => {
                   )
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -207,7 +207,7 @@ const dataFeed = () => {
                   )
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -231,7 +231,7 @@ const dataFeed = () => {
                   'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/mars.svg')
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -255,7 +255,7 @@ const dataFeed = () => {
                   'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/jupiter.svg')
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -279,7 +279,7 @@ const dataFeed = () => {
                   'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/saturn.svg')
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -305,7 +305,7 @@ const dataFeed = () => {
                   )
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -329,7 +329,7 @@ const dataFeed = () => {
                   'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/neptune.svg')
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
@@ -355,7 +355,7 @@ const dataFeed = () => {
                   )
                 }
               >
-                <Button type='submit' loading={loading} color='orange'>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
                   Add
                 </Button>
               </Form>
