@@ -4,25 +4,26 @@ import detectEthereumProvider from '@metamask/detect-provider';
 import * as ethers from 'ethers';
 import Head from 'next/head';
 import DataFeed from '../components/datafeed-page';
-import Mint from '../components/mint-page';
 import { Link } from '../routes';
 
 const App = () => {
+  // Initial State
   const [account, setAccount] = useState();
   const [connected, setConnected] = useState(false);
+  const [networkName, setNetworkName] = useState('Not Connected');
 
-  useEffect(async () => {
-    await checkMetamask;
-
-    // Check for changes in Metamask (account and chain)
-    if (window.ethereum) {
-      window.ethereum.on('chainChanged', () => {
-        window.location.reload();
-      });
-      window.ethereum.on('accountsChanged', () => {
-        window.location.reload();
-      });
-    }
+  useEffect(() => {
+    checkMetamask().then(() => {
+      // Check for changes in Metamask (account and chain)
+      if (window.ethereum) {
+        window.ethereum.on('chainChanged', () => {
+          window.location.reload();
+        });
+        window.ethereum.on('accountsChanged', () => {
+          window.location.reload();
+        });
+      }
+    });
   }, []);
 
   const checkMetamask = async () => {
@@ -32,27 +33,34 @@ const App = () => {
       const chainId = await provider.request({
         method: 'eth_chainId',
       });
-      // Moonbase Alpha's chainId is 1287, which is 0x507 in hex
-      if (chainId === '0x507') {
-        const accounts = await ethereum.request({
-          method: 'eth_requestAccounts',
-        });
 
-        console.log(`O -> ${accounts}`);
+      let networkName;
+      switch (chainId) {
+        case '0x507':
+          networkName = 'Moonbase Alpha';
+          break;
+        default:
+          networkName = '';
+          setNetworkName('Only Moonbase Alpha Supported');
+          break;
+      }
 
-        // Update State
-        if (accounts) {
-          console.log(`I -> ${accounts}`);
-          setAccount(ethers.utils.getAddress(accounts[0]));
-          setConnected(true);
-        }
-      } else {
-        // Only Moonbase Alpha is Supported
-        setAccount('Only Moonbase Alpha Supported');
+      if (networkName !== 'Not Connected') {
+        setNetworkName(networkName);
+      }
+
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+
+      // Update State
+      if (accounts) {
+        setAccount(ethers.utils.getAddress(accounts[0]));
+        setConnected(true);
       }
     } else {
       // MetaMask not detected
-      setAccount('MetaMask not Detected');
+      setNetworkName('MetaMask not Detected');
     }
   };
 
@@ -65,10 +73,7 @@ const App = () => {
       <Head>
         <title>Moonbase ERC20Mint</title>
         <link rel='icon' type='image/png' sizes='32x32' href='/favicon.png' />
-        <link
-          rel='stylesheet'
-          href='//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css'
-        />
+        <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css' />
       </Head>
       <Menu style={{ marginTop: '10px' }}>
         <Link route='/'>
@@ -76,10 +81,10 @@ const App = () => {
         </Link>
         <Menu.Menu position='right'>
           <a className='item'> {account} </a>
-          {connected ? (
+          {{ connected }.connected ? (
             <Button floated='right' icon labelPosition='left' color='green'>
               <Icon name='check'></Icon>
-              Connected
+              {networkName}
             </Button>
           ) : (
             <Button floated='right' icon labelPosition='left' onClick={onConnect} primary>
@@ -90,15 +95,10 @@ const App = () => {
         </Menu.Menu>
       </Menu>
       <br />
-      <DataFeed />
-      <br />
-      <hr />
-      <br />
-      <Mint account={account} />
+      <DataFeed account={account} />
       <br />
       <p>
-        Don't judge the code :) as it is for demostration purposes only. You can check the source
-        code &nbsp;
+        Don't judge the code :) as it is for demostration purposes only. You can check the source code &nbsp;
         <a href='https://github.com/albertov19/moonbase-mintableERC20'>here</a>
       </p>
       <br />

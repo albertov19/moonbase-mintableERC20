@@ -1,89 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Form } from 'semantic-ui-react';
+import { Button, Form, Table, Container } from 'semantic-ui-react';
 
 import tokenInstance from '../ethereum/feed';
 
 const addresses = require('../ethereum/addresses');
 
-const dataFeed = () => {
-  const [mercBalState, setMercBalState] = useState(0);
-  const [venBalState, setVenBalState] = useState(0);
-  const [erthBalState, setErthBalState] = useState(0);
-  const [marsBalState, setMarsBalState] = useState(0);
-  const [jupBalState, setJupBalState] = useState(0);
-  const [satBalState, setSatBalState] = useState(0);
-  const [unsBalState, setUnsBalState] = useState(0);
-  const [neptBalState, setNeptBalState] = useState(0);
-  const [plutBalState, setPlutBalState] = useState(0);
-  const [mercMintState, setMercMintState] = useState(false);
-  const [venMintState, setVenMintState] = useState(false);
-  const [erthMintState, setErthMintState] = useState(false);
-  const [marsMintState, setMarsMintState] = useState(false);
-  const [jupMintState, setJupMintState] = useState(false);
-  const [satMintState, setSatMintState] = useState(false);
-  const [unsMintState, setUnsMintState] = useState(false);
-  const [neptMintState, setNeptMintState] = useState(false);
-  const [plutMintState, setPlutMintState] = useState(false);
+const tokenNames = [
+  {
+    name: 'Mercury',
+    symbol: 'MERC',
+  },
+  {
+    name: 'Venus',
+    symbol: 'VEN',
+  },
+  {
+    name: 'Earth',
+    symbol: 'ERTH',
+  },
+  {
+    name: 'Mars',
+    symbol: 'MARS',
+  },
+  {
+    name: 'Jupiter',
+    symbol: 'JUP',
+  },
+  {
+    name: 'Saturn',
+    symbol: 'SAT',
+  },
+  {
+    name: 'Uranus',
+    symbol: 'UNS',
+  },
+  {
+    name: 'Neptune',
+    symbol: 'NEPT',
+  },
+  {
+    name: 'Pluto',
+    symbol: 'PLUT',
+  },
+];
+
+const dataFeed = ({ account }) => {
+  const [tokBalState, setTokBalState] = useState(Array());
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setInterval(async () => await onUpdate(), 3000);
-  }, []);
+    const onUpdate = async () => {
+      let balances = Array();
+      for (let token of tokenNames) {
+        balances[token['name'].toLowerCase()] = await getBalance(addresses[token['name'].toLowerCase()]);
+      }
 
-  const onUpdate = async () => {
-    // Mercury
-    const [mercBal, mercMint] = await getBalance(addresses.mercury);
-    // Venus
-    const [venBal, venMint] = await getBalance(addresses.venus);
-    // Earth
-    const [erthBal, erthMint] = await getBalance(addresses.earth);
-    // Mars
-    const [marsBal, marsMint] = await getBalance(addresses.mars);
-    // Jupiter
-    const [jupBal, jupMint] = await getBalance(addresses.jupiter);
-    // Saturn
-    const [satBal, satMint] = await getBalance(addresses.saturn);
-    // Uranus
-    const [unsBal, unsMint] = await getBalance(addresses.uranus);
-    // Neptune
-    const [neptBal, neptMint] = await getBalance(addresses.neptune);
-    // Pluto
-    const [plutBal, plutMint] = await getBalance(addresses.pluto);
+      setTokBalState(balances);
+    };
 
-    // Set Balance
-    setMercBalState(mercBal);
-    setVenBalState(venBal);
-    setErthBalState(erthBal);
-    setMarsBalState(marsBal);
-    setJupBalState(jupBal);
-    setSatBalState(satBal);
-    setUnsBalState(unsBal);
-    setNeptBalState(neptBal);
-    setPlutBalState(plutBal);
-    setMercMintState(mercMint);
-    setVenMintState(venMint);
-    setErthMintState(erthMint);
-    setMarsMintState(marsMint);
-    setJupMintState(jupMint);
-    setSatMintState(satMint);
-    setUnsMintState(unsMint);
-    setNeptMintState(neptMint);
-    setPlutMintState(plutMint);
-  };
+    const getBalance = async (address) => {
+      // Get token balance and mint state
+      try {
+        if (account) {
+          const contractInstance = tokenInstance(address);
+          const dec = await contractInstance.decimals();
+          const mint = await contractInstance.canMint(account);
+          const balance = await contractInstance.balanceOf(account);
+          return { balance: (balance.toString() / Math.pow(10, dec)).toFixed(2), mint: mint };
+        } else {
+          return { balance: 0, mint: false };
+        }
+      } catch (error) {
+        // Could not fetch price return error
+        console.log(error);
+      }
+    };
 
-  const getBalance = async (address) => {
-    // Get token balance and mint state
-    try {
-      const contractInstance = tokenInstance(address);
-      const dec = await contractInstance.decimals();
-      const mint = await contractInstance.canMint(ethereum.selectedAddress);
-      const balance = await contractInstance.balanceOf(ethereum.selectedAddress);
-      return [(balance.toString() / Math.pow(10, dec)).toFixed(2), mint.toString()];
-    } catch (error) {
-      // Could not fetch price return error
-      console.log(error);
-      return [0, 'N/A'];
+    let intervalId;
+    if (account) {
+      intervalId = setInterval(async () => await onUpdate(), 3000);
     }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [account]);
+
+  // On Submit Tx
+  const onMint = async (address) => {
+    // Get Contract Instance for the Corresponding Token
+    const contractInstance = tokenInstance(address);
+
+    setLoading(true);
+
+    // Mint Token
+    try {
+      await contractInstance.mintToken();
+    } catch (err) {
+      setLoading(false);
+    }
+    setLoading(false);
+    return;
   };
 
   const addToMetamask = async (address, imageURL) => {
@@ -111,32 +129,77 @@ const dataFeed = () => {
     setLoading(false);
   };
 
+  const renderRows = () => {
+    const { Row, Cell } = Table;
+
+    return tokenNames.map((token, index) => {
+      let imgName = `/logos/${token['name'].toLowerCase()}.svg`;
+      let imgURL = `https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public${imgName}`;
+
+      let tokenAddress = addresses[token['name'].toLowerCase()];
+      let balance = tokBalState[token['name'].toLowerCase()]?.balance || 'N/A';
+      let mintEnabled = tokBalState[token['name'].toLowerCase()]?.mint || false;
+      let expURL = `https://moonbase.moonscan.io/token/${tokenAddress}`;
+      return (
+        <Row key={index}>
+          <Cell>{<img src={imgName} style={{ width: 32, height: 32 }} />}</Cell>
+          <Cell>{token.name}</Cell>
+          <Cell>{token.symbol}</Cell>
+          <Cell>{<a href={expURL}>{tokenAddress}</a>}</Cell>
+          <Cell>{balance}</Cell>
+          <Cell>
+            {
+              <Form onSubmit={() => onMint(tokenAddress)}>
+                <Button type='submit' loading={loading} disabled={loading || !mintEnabled} color='orange'>
+                  Mint
+                </Button>
+              </Form>
+            }
+          </Cell>
+          <Cell>
+            {
+              <Form onSubmit={() => addToMetamask(tokenAddress, imgURL)}>
+                <Button type='submit' loading={loading} disabled={loading} color='orange'>
+                  Add
+                </Button>
+              </Form>
+            }
+          </Cell>
+        </Row>
+      );
+    });
+  };
+
+  const { Header, Row, HeaderCell, Body } = Table;
+
   return (
     <div>
       <h3>Token Balance Information</h3>
       <p>
-        Information displayed in the following table corresponds to your on-chain balance of each of
-        the following ERC20 tokens on the Moonbase Alpha TestNet! <br />
+        Information displayed in the following table corresponds to your on-chain balance of each of the following ERC20
+        tokens on the Moonbase Alpha TestNet! <br />
         Users can mint 100 tokens every hour in each ERC20 token contract. <br />
-        There are 8 tokens that represent each planet of the solar system. The 9th token is for
-        Pluto, which is not{' '}
+        There are 8 tokens that represent each planet of the solar system. The 9th token is for Pluto, which is not{' '}
         <a href='https://www.loc.gov/everyday-mysteries/astronomy/item/why-is-pluto-no-longer-a-planet/'>
           considered a planet anymore.
         </a>
       </p>
-      <table className='ui celled table' style={{ textAlign: 'center' }}>
-        <thead>
-          <tr>
-            <th>Logo</th>
-            <th>ERC20 Token Name</th>
-            <th>Symbol</th>
-            <th>Address</th>
-            <th>Balance</th>
-            <th>Can Mint?</th>
-            <th>Add to Metamask</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Container>
+        <Table textAlign='center'>
+          <Header>
+            <Row>
+              <HeaderCell>Logo</HeaderCell>
+              <HeaderCell>Token Name</HeaderCell>
+              <HeaderCell>Symbol</HeaderCell>
+              <HeaderCell>Address</HeaderCell>
+              <HeaderCell>Balance</HeaderCell>
+              <HeaderCell>Mint</HeaderCell>
+              <HeaderCell>Add to Metamask</HeaderCell>
+            </Row>
+          </Header>
+          <Body>{renderRows()}</Body>
+
+          {/* <tbody>
           <tr>
             <td>
               <img src='/logos/mercury.svg' alt='MercuryLogo' style={{ width: 32, height: 32 }} />
@@ -145,7 +208,7 @@ const dataFeed = () => {
             <td data-label='Symbol'>MERC</td>
             <td data-label='ERC20 Token'>{addresses.mercury}</td>
             <td data-label='Balance'>{mercBalState}</td>
-            <td data-label='Can Mint?'>{mercMintState}</td>
+            <td data-label='Mint'>{mercMintState}</td>
             <td data-label='AddMetamask'>
               <Form
                 onSubmit={() =>
@@ -161,208 +224,9 @@ const dataFeed = () => {
               </Form>
             </td>
           </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/venus.svg' alt='VenusLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Venus</td>
-            <td data-label='Symbol'>VEN</td>
-            <td data-label='ERC20 Token'>{addresses.venus}</td>
-            <td data-label='Balance'>{venBalState}</td>
-            <td data-label='Can Mint?'>{venMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={() =>
-                  addToMetamask(
-                    addresses.venus,
-                    'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/venus.svg'
-                  )
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/earth.svg' alt='EarthLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Earth</td>
-            <td data-label='Symbol'>ERTH</td>
-            <td data-label='ERC20 Token'>{addresses.earth}</td>
-            <td data-label='Balance'>{erthBalState}</td>
-            <td data-label='Can Mint?'>{erthMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={() =>
-                  addToMetamask(
-                    addresses.earth,
-                    'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/earth.svg'
-                  )
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/mars.svg' alt='MarsLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Mars</td>
-            <td data-label='Symbol'>MARS</td>
-            <td data-label='ERC20 Token'>{addresses.mars}</td>
-            <td data-label='Balance'>{marsBalState}</td>
-            <td data-label='Can Mint?'>{marsMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={
-                  (() => addToMetamask(addresses.mars),
-                  'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/mars.svg')
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>{' '}
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/jupiter.svg' alt='JupiterLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Jupiter</td>
-            <td data-label='Symbol'>JUP</td>
-            <td data-label='ERC20 Token'>{addresses.jupiter}</td>
-            <td data-label='Balance'>{jupBalState}</td>
-            <td data-label='Can Mint?'>{jupMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={
-                  (() => addToMetamask(addresses.jupiter),
-                  'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/jupiter.svg')
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>{' '}
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/saturn.svg' alt='SaturnLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Saturn</td>
-            <td data-label='Symbol'>SAT</td>
-            <td data-label='ERC20 Token'>{addresses.saturn}</td>
-            <td data-label='Balance'>{satBalState}</td>
-            <td data-label='Next Mint'>{satMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={
-                  (() => addToMetamask(addresses.saturn),
-                  'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/saturn.svg')
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>{' '}
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/uranus.svg' alt='UranusLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Uranus</td>
-            <td data-label='Symbol'>UNS</td>
-            <td data-label='ERC20 Token'>{addresses.uranus}</td>
-            <td data-label='Balance'>{unsBalState}</td>
-            <td data-label='Next Mint'>{unsMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={() =>
-                  addToMetamask(
-                    addresses.uranus,
-                    'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/uranus.svg'
-                  )
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>{' '}
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/neptune.svg' alt='NeptuneLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Neptune</td>
-            <td data-label='Symbol'>NEPT</td>
-            <td data-label='ERC20 Token'>{addresses.neptune}</td>
-            <td data-label='Balance'>{neptBalState}</td>
-            <td data-label='Next Mint'>{neptMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={
-                  (() => addToMetamask(addresses.neptune),
-                  'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/neptune.svg')
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>{' '}
-          </tr>
-        </tbody>
-        <tbody>
-          <tr>
-            <td>
-              <img src='/logos/pluto.svg' alt='PlutoLogo' style={{ width: 32, height: 32 }} />
-            </td>
-            <td data-label='ERC20 Token'>Pluto</td>
-            <td data-label='Symbol'>PLUT</td>
-            <td data-label='ERC20 Token'>{addresses.pluto}</td>
-            <td data-label='Balance'>{plutBalState}</td>
-            <td data-label='Next Mint'>{plutMintState}</td>
-            <td data-label='AddMetamask'>
-              <Form
-                onSubmit={() =>
-                  addToMetamask(
-                    addresses.pluto,
-                    'https://raw.githubusercontent.com/albertov19/moonbase-mintableERC20/main/mintableERC20-interface/public/logos/pluto.svg'
-                  )
-                }
-              >
-                <Button type='submit' loading={loading} disabled={loading} color='orange'>
-                  Add
-                </Button>
-              </Form>
-            </td>{' '}
-          </tr>
-        </tbody>
-      </table>
+        </tbody> */}
+        </Table>
+      </Container>
     </div>
   );
 };
