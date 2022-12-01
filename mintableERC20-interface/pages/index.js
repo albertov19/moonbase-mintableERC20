@@ -40,23 +40,23 @@ const App = () => {
           networkName = 'Moonbase Alpha';
           break;
         default:
-          networkName = '';
-          setNetworkName('Only Moonbase Alpha Supported');
+          networkName = 'Not Connected';
+          setAccount('Only Moonbase Alpha Supported');
           break;
       }
 
       if (networkName !== 'Not Connected') {
         setNetworkName(networkName);
-      }
 
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      });
+        const accounts = await ethereum.request({
+          method: 'eth_requestAccounts',
+        });
 
-      // Update State
-      if (accounts) {
-        setAccount(ethers.utils.getAddress(accounts[0]));
-        setConnected(true);
+        // Update State
+        if (accounts) {
+          setAccount(ethers.utils.getAddress(accounts[0]));
+          setConnected(true);
+        }
       }
     } else {
       // MetaMask not detected

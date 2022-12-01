@@ -1,48 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Table, Container } from 'semantic-ui-react';
-
+import { tokenNames } from '../ethereum/tokenNames';
 import tokenInstance from '../ethereum/feed';
 
 const addresses = require('../ethereum/addresses');
-
-const tokenNames = [
-  {
-    name: 'Mercury',
-    symbol: 'MERC',
-  },
-  {
-    name: 'Venus',
-    symbol: 'VEN',
-  },
-  {
-    name: 'Earth',
-    symbol: 'ERTH',
-  },
-  {
-    name: 'Mars',
-    symbol: 'MARS',
-  },
-  {
-    name: 'Jupiter',
-    symbol: 'JUP',
-  },
-  {
-    name: 'Saturn',
-    symbol: 'SAT',
-  },
-  {
-    name: 'Uranus',
-    symbol: 'UNS',
-  },
-  {
-    name: 'Neptune',
-    symbol: 'NEPT',
-  },
-  {
-    name: 'Pluto',
-    symbol: 'PLUT',
-  },
-];
 
 const dataFeed = ({ account }) => {
   const [tokBalState, setTokBalState] = useState(Array());
@@ -61,7 +22,7 @@ const dataFeed = ({ account }) => {
     const getBalance = async (address) => {
       // Get token balance and mint state
       try {
-        if (account) {
+        if (account.slice(0, 2) == '0x') {
           const contractInstance = tokenInstance(address);
           const dec = await contractInstance.decimals();
           const mint = await contractInstance.canMint(account);
@@ -78,7 +39,7 @@ const dataFeed = ({ account }) => {
 
     let intervalId;
     if (account) {
-      intervalId = setInterval(async () => await onUpdate(), 3000);
+      intervalId = setInterval(async () => await onUpdate(), 1500);
     }
     return () => {
       if (intervalId) {
@@ -88,15 +49,16 @@ const dataFeed = ({ account }) => {
   }, [account]);
 
   // On Submit Tx
-  const onMint = async (address) => {
+  const onMint = async (tokenName, address) => {
     // Get Contract Instance for the Corresponding Token
     const contractInstance = tokenInstance(address);
 
-    setLoading(true);
+    setLoading(loading[tokenName]);
 
     // Mint Token
     try {
-      await contractInstance.mintToken();
+      let tx = await contractInstance.mintToken();
+      await tx.wait();
     } catch (err) {
       setLoading(false);
     }
@@ -149,7 +111,7 @@ const dataFeed = ({ account }) => {
           <Cell>{balance}</Cell>
           <Cell>
             {
-              <Form onSubmit={() => onMint(tokenAddress)}>
+              <Form onSubmit={() => onMint(token.name, tokenAddress)}>
                 <Button type='submit' loading={loading} disabled={loading || !mintEnabled} color='orange'>
                   Mint
                 </Button>
