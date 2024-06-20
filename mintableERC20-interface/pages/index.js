@@ -98,7 +98,7 @@ const App = () => {
       <DataFeed account={account} />
       <br />
       <p>
-        Don't judge the code :) as it is for demostration purposes only. You can check the source code &nbsp;
+        Don't judge the code :) as it is for demonstration purposes only. You can check the source code &nbsp;
         <a href='https://github.com/albertov19/moonbase-mintableERC20'>here</a>
       </p>
       <br />
