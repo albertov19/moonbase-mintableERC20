@@ -73,7 +73,10 @@ const App = () => {
       <Head>
         <title>Moonbase ERC20Mint</title>
         <link rel='icon' type='image/png' sizes='32x32' href='/favicon.png' />
-        <link rel='stylesheet' href='//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css' />
+        <link
+          rel='stylesheet'
+          href='//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css'
+        />
       </Head>
       <Menu style={{ marginTop: '10px' }}>
         <Link route='/'>
@@ -87,7 +90,13 @@ const App = () => {
               {networkName}
             </Button>
           ) : (
-            <Button floated='right' icon labelPosition='left' onClick={onConnect} primary>
+            <Button
+              floated='right'
+              icon
+              labelPosition='left'
+              onClick={onConnect}
+              primary
+            >
               <Icon name='plus square'></Icon>
               Connect MetaMask
             </Button>
@@ -98,7 +107,8 @@ const App = () => {
       <DataFeed account={account} />
       <br />
       <p>
-        Don't judge the code :) as it is for demostration purposes only. You can check the source code &nbsp;
+        Don't judge the code :) as it is for demonstration purposes only. You
+        can check the source code &nbsp;
         <a href='https://github.com/albertov19/moonbase-mintableERC20'>here</a>
       </p>
       <br />
