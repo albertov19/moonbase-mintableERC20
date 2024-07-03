@@ -13,7 +13,6 @@ const App = () => {
   const [networkName, setNetworkName] = useState('Not Connected');
 
   useEffect(() => {
-    checkMetamask().then(() => {
       // Check for changes in Metamask (account and chain)
       if (window.ethereum) {
         window.ethereum.on('chainChanged', () => {
@@ -23,13 +22,17 @@ const App = () => {
           window.location.reload();
         });
       }
-    });
   }, []);
 
   const checkMetamask = async () => {
     const provider = await detectEthereumProvider({ mustBeMetaMask: true });
+    let accounts;
 
     if (provider) {
+      accounts = await ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      
       const chainId = await provider.request({
         method: 'eth_chainId',
       });
@@ -47,10 +50,6 @@ const App = () => {
 
       if (networkName !== 'Not Connected') {
         setNetworkName(networkName);
-
-        const accounts = await ethereum.request({
-          method: 'eth_requestAccounts',
-        });
 
         // Update State
         if (accounts) {
@@ -98,7 +97,7 @@ const App = () => {
               primary
             >
               <Icon name='plus square'></Icon>
-              Connect MetaMask
+              Connect EVM Wallet
             </Button>
           )}
         </Menu.Menu>
